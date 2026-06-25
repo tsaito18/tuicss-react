@@ -1,0 +1,5 @@
+{
+  "$schema": "https://cdn.jsdelivr.net/npm/@arethetypeswrong/cli/dist/schema.json",
+  "ignoreRules": [],
+  "excludeEntrypoints": ["styles.css"]
+}
