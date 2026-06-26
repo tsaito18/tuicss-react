@@ -361,5 +361,5 @@ This project is licensed under the [MIT License](./LICENSE), Copyright (c) 2026 
 
 It builds upon and redistributes assets from:
 
-- **[TuiCss](https://github.com/vinibiavatti1/TuiCss)** by Vinicius Reif Biavatti — MIT License, Copyright (c) 2019. The SCSS sources, fonts, and images are vendored under `vendor/tuicss/` and recompiled at publish time (see `vendor/tuicss/LICENSE` and `vendor/tuicss/NOTICE.md`).
+- **[TuiCss](https://github.com/vinibiavatti1/TuiCss)** by Vinicius Reif Biavatti — MIT License, Copyright (c) 2019. The SCSS sources, fonts, and images are vendored under `vendor/tuicss/` and recompiled at publish time. Published packages include the third-party license and notice under `dist/third-party/tuicss/`.
 - **"Perfect DOS VGA 437"** font, bundled via TuiCss and free to redistribute (see `vendor/tuicss/fonts/dos437.txt`).

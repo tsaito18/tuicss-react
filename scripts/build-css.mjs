@@ -9,8 +9,10 @@ const root = join(__dirname, '..');
 const vendorDir = join(root, 'vendor', 'tuicss');
 const entry = join(vendorDir, 'tuicss.scss');
 const distDir = join(root, 'dist');
+const thirdPartyTuiCssDir = join(distDir, 'third-party', 'tuicss');
 
 mkdirSync(distDir, { recursive: true });
+mkdirSync(thirdPartyTuiCssDir, { recursive: true });
 
 const result = sass.compile(entry, { style: 'expanded' });
 writeFileSync(join(distDir, 'styles.css'), result.css);
@@ -19,5 +21,7 @@ writeFileSync(join(distDir, 'styles.css'), result.css);
 // background url() references use output-relative paths (./fonts, images/...).
 cpSync(join(vendorDir, 'fonts'), join(distDir, 'fonts'), { recursive: true });
 cpSync(join(vendorDir, 'images'), join(distDir, 'images'), { recursive: true });
+cpSync(join(vendorDir, 'LICENSE'), join(thirdPartyTuiCssDir, 'LICENSE'));
+cpSync(join(vendorDir, 'NOTICE.md'), join(thirdPartyTuiCssDir, 'NOTICE.md'));
 
 console.log(`build:css done -> ${join(distDir, 'styles.css')} (${result.css.length} bytes)`);
