@@ -25,6 +25,7 @@
     "url": "https://github.com/tsaito18/tuicss-react/issues"
   },
   "type": "module",
+  "packageManager": "pnpm@10.24.0",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -54,7 +55,7 @@
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
-    "build": "npm run build:js && npm run build:css",
+    "build": "pnpm run build:js && pnpm run build:css",
     "build:js": "tsup",
     "build:css": "node scripts/build-css.mjs",
     "test": "vitest run",
@@ -62,7 +63,7 @@
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "pnpm run build",
     "lint:pkg": "publint",
     "check:types": "attw --pack"
   },

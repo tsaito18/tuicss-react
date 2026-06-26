@@ -12,13 +12,13 @@ This package wraps the classic TuiCss look and feel in idiomatic, typed React 19
 ## Installation
 
 ```bash
-npm install @tsaito18/tuicss-react
+pnpm add @tsaito18/tuicss-react
 ```
 
 React 19 (or newer) is a **peer dependency** — install it alongside if you have not already:
 
 ```bash
-npm install react@">=19" react-dom@">=19"
+pnpm add react@">=19" react-dom@">=19"
 ```
 
 ## Setup
