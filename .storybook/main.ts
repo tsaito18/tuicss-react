@@ -11,6 +11,10 @@ const config: StorybookConfig = {
   staticDirs: [
     { from: '../vendor/tuicss/fonts', to: '/styles/fonts' },
     { from: '../vendor/tuicss/images', to: '/components/images' },
+    // In a static build the preview CSS is emitted under /assets/, so its relative
+    // url() paths resolve against /assets/. Mirror the assets there to avoid 404s.
+    { from: '../vendor/tuicss/fonts', to: '/assets/styles/fonts' },
+    { from: '../vendor/tuicss/images', to: '/assets/components/images' },
   ],
 };
 

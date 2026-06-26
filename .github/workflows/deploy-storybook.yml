@@ -1,0 +1,56 @@
+name: Deploy Storybook
+
+# Builds the Storybook static site and deploys it to GitHub Pages.
+# Triggered on the same version tag as Release (e.g. v0.2.0), or manually.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read # checkout the repository
+  pages: write # publish to GitHub Pages
+  id-token: write # OIDC token for the official Pages deployment
+
+# Allow one in-flight Pages deployment to finish rather than cancelling it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - uses: actions/configure-pages@v5
+
+      - name: Build Storybook
+        run: pnpm run build-storybook
+
+      # The official Pages deployment serves the artifact as-is (no Jekyll),
+      # so no .nojekyll file is required.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: storybook-static
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
