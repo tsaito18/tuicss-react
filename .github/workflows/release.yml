@@ -60,7 +60,9 @@ jobs:
       # NOTE: --provenance requires this repository to be PUBLIC.
       - name: Publish to npm
         if: steps.check.outputs.exists == 'false'
-        run: pnpm publish --provenance --access public
+        # --no-git-checks: tag-triggered runs check out a detached HEAD, which pnpm's
+        # default publish-branch guard rejects (ERR_PNPM_GIT_UNKNOWN_BRANCH).
+        run: pnpm publish --provenance --access public --no-git-checks
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
