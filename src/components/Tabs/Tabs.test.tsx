@@ -46,6 +46,13 @@ describe('Tabs', () => {
     expect(screen.queryByText('Panel 1')).not.toBeInTheDocument();
   });
 
+  it('falls back to the first enabled tab when defaultValue is disabled or missing', () => {
+    render(<BasicTabs defaultValue="tab-3" />);
+    expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveClass('active');
+    expect(screen.getByText('Panel 1')).toBeInTheDocument();
+    expect(screen.queryByText('Panel 3')).not.toBeInTheDocument();
+  });
+
   it('moves the active class and switches the visible panel on click', async () => {
     const user = userEvent.setup();
     render(<BasicTabs />);
@@ -82,6 +89,42 @@ describe('Tabs', () => {
     render(<BasicTabs />);
     expect(screen.getByRole('tab', { name: 'Tab 1' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: 'Tab 2' })).toHaveAttribute('aria-selected', 'false');
+  });
+
+  it('selects a focused tab with Enter or Space', async () => {
+    const user = userEvent.setup();
+    render(<BasicTabs />);
+    const tab2 = screen.getByRole('tab', { name: 'Tab 2' });
+    tab2.focus();
+
+    await user.keyboard('{Enter}');
+    expect(tab2).toHaveClass('active');
+    expect(screen.getByText('Panel 2')).toBeInTheDocument();
+
+    const tab1 = screen.getByRole('tab', { name: 'Tab 1' });
+    tab1.focus();
+    await user.keyboard(' ');
+    expect(tab1).toHaveClass('active');
+    expect(screen.getByText('Panel 1')).toBeInTheDocument();
+  });
+
+  it('moves selection with arrow keys and skips disabled tabs', async () => {
+    const user = userEvent.setup();
+    render(<BasicTabs />);
+    const tab1 = screen.getByRole('tab', { name: 'Tab 1' });
+    tab1.focus();
+
+    await user.keyboard('{ArrowRight}');
+
+    const tab2 = screen.getByRole('tab', { name: 'Tab 2' });
+    expect(tab2).toHaveClass('active');
+    expect(tab2).toHaveFocus();
+
+    await user.keyboard('{ArrowRight}');
+
+    expect(tab1).toHaveClass('active');
+    expect(tab1).toHaveFocus();
+    expect(screen.getByRole('tab', { name: 'Tab 3' })).not.toHaveClass('active');
   });
 
   it('supports controlled mode via value + onValueChange', async () => {

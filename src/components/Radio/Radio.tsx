@@ -1,7 +1,7 @@
 import type { ComponentPropsWithoutRef, Ref } from 'react';
 import { cx } from '../../utils/cx';
 
-export interface RadioProps extends ComponentPropsWithoutRef<'input'> {
+export interface RadioProps extends Omit<ComponentPropsWithoutRef<'input'>, 'type'> {
   // ref はラジオの input(HTMLInputElement) へ転送される。
   ref?: Ref<HTMLInputElement>;
   // className / labelClassName は共にルートの label.tui-radio へマージされる。
@@ -16,7 +16,7 @@ export function Radio({ className, labelClassName, children, ref, ...inputProps 
   return (
     <label className={cx('tui-radio', labelClassName, className)}>
       {children}
-      <input type="radio" ref={ref} {...inputProps} />
+      <input ref={ref} {...inputProps} type="radio" />
       <span />
     </label>
   );

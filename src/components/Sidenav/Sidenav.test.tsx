@@ -94,6 +94,8 @@ describe('SidenavButton', () => {
     const button = screen.getByTestId('btn');
     expect(button.tagName).toBe('LI');
     expect(button).toHaveClass('tui-sidenav-button');
+    expect(button).toHaveAttribute('role', 'button');
+    expect(button).toHaveAttribute('tabindex', '0');
   });
 
   it('fires onClick', async () => {
@@ -106,6 +108,23 @@ describe('SidenavButton', () => {
     );
     await user.click(screen.getByTestId('btn'));
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('fires onClick from Enter and Space', async () => {
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    render(
+      <SidenavButton onClick={onClick} data-testid="btn">
+        ≡
+      </SidenavButton>,
+    );
+    const button = screen.getByTestId('btn');
+    button.focus();
+
+    await user.keyboard('{Enter}');
+    await user.keyboard(' ');
+
+    expect(onClick).toHaveBeenCalledTimes(2);
   });
 
   it('merges an additional className', () => {

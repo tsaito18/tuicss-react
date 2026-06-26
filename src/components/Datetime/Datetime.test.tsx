@@ -101,6 +101,23 @@ describe('Datetime', () => {
     expect(container.querySelector('span')?.textContent).toBe('09:08:12');
   });
 
+  it.each([Number.NaN, Infinity, 0, -1])('normalizes invalid intervalMs %s to 1000ms', (intervalMs) => {
+    let container!: HTMLElement;
+    act(() => {
+      ({ container } = render(<Datetime format="H:m:s" intervalMs={intervalMs} />));
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(999);
+    });
+    expect(container.querySelector('span')?.textContent).toBe('09:08:07');
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(container.querySelector('span')?.textContent).toBe('09:08:08');
+  });
+
   it('clears the interval on unmount (no timers left)', () => {
     const { unmount } = render(<Datetime />);
     expect(vi.getTimerCount()).toBeGreaterThan(0);

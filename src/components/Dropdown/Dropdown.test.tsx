@@ -50,6 +50,51 @@ describe('Dropdown', () => {
     expect(button).toBeDisabled();
   });
 
+  it('defaults the trigger type to button and honors an explicit type', () => {
+    render(<Dropdown label="Menu" buttonProps={{ type: 'submit' }} />);
+    expect(screen.getByRole('button', { name: 'Menu' })).toHaveAttribute('type', 'submit');
+  });
+
+  it('exposes popup state and toggles open on click', async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <Dropdown label="Menu">
+        <DropdownItem href="#one">Option 1</DropdownItem>
+      </Dropdown>,
+    );
+    const button = screen.getByRole('button', { name: 'Menu' });
+    const root = container.querySelector('li.tui-dropdown');
+    expect(button).toHaveAttribute('aria-haspopup', 'menu');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(button);
+
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+    expect(root).toHaveClass('active');
+    expect(container.querySelector('.tui-dropdown-content')).toHaveStyle({ display: 'block' });
+  });
+
+  it('opens with ArrowDown, focuses the first item, and closes with Escape', async () => {
+    const user = userEvent.setup();
+    render(
+      <Dropdown label="Menu">
+        <DropdownItem href="#one">Option 1</DropdownItem>
+      </Dropdown>,
+    );
+    const button = screen.getByRole('button', { name: 'Menu' });
+    button.focus();
+
+    await user.keyboard('{ArrowDown}');
+
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('link', { name: 'Option 1' })).toHaveFocus();
+
+    button.focus();
+    await user.keyboard('{Escape}');
+
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('forwards ref to the root li element', () => {
     const ref = createRef<HTMLLIElement>();
     render(<Dropdown ref={ref} label="Menu" />);

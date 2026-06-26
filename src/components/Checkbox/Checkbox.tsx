@@ -1,7 +1,7 @@
 import type { ComponentPropsWithoutRef, Ref } from 'react';
 import { cx } from '../../utils/cx';
 
-export interface CheckboxProps extends ComponentPropsWithoutRef<'input'> {
+export interface CheckboxProps extends Omit<ComponentPropsWithoutRef<'input'>, 'type'> {
   // ref はチェックボックスの input(HTMLInputElement) へ転送される。
   ref?: Ref<HTMLInputElement>;
   // className / labelClassName は共にルートの label.tui-checkbox へマージされる。
@@ -15,7 +15,7 @@ export function Checkbox({ className, labelClassName, children, ref, ...inputPro
   return (
     <label className={cx('tui-checkbox', labelClassName, className)}>
       {children}
-      <input type="checkbox" ref={ref} {...inputProps} />
+      <input ref={ref} {...inputProps} type="checkbox" />
       <span />
     </label>
   );

@@ -70,9 +70,13 @@ describe('StatusBarItem', () => {
 });
 
 describe('StatusBarDivider', () => {
-  it('renders span.tui-statusbar-divider', () => {
-    const { container } = render(<StatusBarDivider />);
-    const span = container.querySelector('span.tui-statusbar-divider');
+  it('renders li > span.tui-statusbar-divider', () => {
+    const { container } = render(
+      <StatusBar>
+        <StatusBarDivider />
+      </StatusBar>,
+    );
+    const span = container.querySelector('ul > li > span.tui-statusbar-divider');
     expect(span).not.toBeNull();
   });
 
@@ -83,10 +87,10 @@ describe('StatusBarDivider', () => {
     expect(span).toHaveClass('extra');
   });
 
-  it('forwards ref to the span element', () => {
-    const ref = createRef<HTMLSpanElement>();
+  it('forwards ref to the li element', () => {
+    const ref = createRef<HTMLLIElement>();
     render(<StatusBarDivider ref={ref} />);
-    expect(ref.current).toBeInstanceOf(HTMLSpanElement);
-    expect(ref.current).toHaveClass('tui-statusbar-divider');
+    expect(ref.current).toBeInstanceOf(HTMLLIElement);
+    expect(ref.current?.querySelector('span')).toHaveClass('tui-statusbar-divider');
   });
 });

@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef, Ref } from 'react';
+import type { ComponentPropsWithoutRef, KeyboardEventHandler, Ref } from 'react';
 import { cx } from '../../utils/cx';
 
 export interface SidenavProps extends ComponentPropsWithoutRef<'nav'> {
@@ -23,10 +23,12 @@ export function Sidenav({
   position = 'left',
   className,
   children,
+  ref,
   ...props
 }: SidenavProps) {
   return (
     <nav
+      ref={ref}
       className={cx('tui-sidenav', open && 'active', position, className)}
       {...props}
     >
@@ -43,8 +45,25 @@ export interface SidenavButtonProps extends ComponentPropsWithoutRef<'li'> {
  * Toggle control for a {@link Sidenav}. Renders `li.tui-sidenav-button`.
  * Wire `onClick` to flip the `open` state owned by the consumer.
  */
-export function SidenavButton({ className, ...props }: SidenavButtonProps) {
-  return <li className={cx('tui-sidenav-button', className)} {...props} />;
+export function SidenavButton({ className, onKeyDown, tabIndex, role, ...props }: SidenavButtonProps) {
+  const handleKeyDown: KeyboardEventHandler<HTMLLIElement> = (event) => {
+    onKeyDown?.(event);
+    if (event.defaultPrevented) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.currentTarget.click();
+    }
+  };
+
+  return (
+    <li
+      className={cx('tui-sidenav-button', className)}
+      role={role ?? 'button'}
+      tabIndex={tabIndex ?? 0}
+      onKeyDown={handleKeyDown}
+      {...props}
+    />
+  );
 }
 
 export interface SidenavItemProps extends ComponentPropsWithoutRef<'a'> {

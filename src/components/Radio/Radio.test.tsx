@@ -65,4 +65,10 @@ describe('Radio', () => {
     render(<Radio disabled>Default</Radio>);
     expect(screen.getByRole('radio', { name: 'Default' })).toBeDisabled();
   });
+
+  it('keeps the input type fixed when unsafe props include type', () => {
+    const unsafeProps = { type: 'checkbox' };
+    render(<Radio {...unsafeProps}>Default</Radio>);
+    expect(screen.getByRole('radio', { name: 'Default' })).toHaveAttribute('type', 'radio');
+  });
 });

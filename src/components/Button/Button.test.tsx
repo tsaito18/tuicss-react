@@ -30,6 +30,17 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: 'OK' })).toBeDisabled();
   });
 
+  it('defaults type to button and honors an explicit type', () => {
+    render(
+      <>
+        <Button>Default</Button>
+        <Button type="submit">Submit</Button>
+      </>,
+    );
+    expect(screen.getByRole('button', { name: 'Default' })).toHaveAttribute('type', 'button');
+    expect(screen.getByRole('button', { name: 'Submit' })).toHaveAttribute('type', 'submit');
+  });
+
   it('forwards ref to the underlying button element', () => {
     const ref = createRef<HTMLButtonElement>();
     render(<Button ref={ref}>OK</Button>);

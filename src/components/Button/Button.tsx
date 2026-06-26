@@ -6,5 +6,5 @@ export interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
 }
 
 export function Button({ className, ref, ...props }: ButtonProps) {
-  return <button ref={ref} className={cx('tui-button', className)} {...props} />;
+  return <button ref={ref} type="button" className={cx('tui-button', className)} {...props} />;
 }

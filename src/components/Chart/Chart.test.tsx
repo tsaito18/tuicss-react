@@ -126,6 +126,24 @@ describe('ChartValue', () => {
     expect(bar.style.height).toBe('0%');
   });
 
+  it('normalizes NaN to 0%', () => {
+    const { container } = render(<ChartValue value={Number.NaN} />);
+    const bar = container.querySelector('.tui-chart-value') as HTMLElement;
+    expect(bar.style.height).toBe('0%');
+  });
+
+  it('normalizes infinities into the 0..100 range', () => {
+    const { container } = render(
+      <>
+        <ChartValue value={Infinity} />
+        <ChartValue value={-Infinity} />
+      </>,
+    );
+    const bars = container.querySelectorAll('.tui-chart-value');
+    expect((bars[0] as HTMLElement).style.height).toBe('100%');
+    expect((bars[1] as HTMLElement).style.height).toBe('0%');
+  });
+
   it('renders children as the bar label', () => {
     const { container } = render(<ChartValue value={50}>50%</ChartValue>);
     expect(container.querySelector('.tui-chart-value')!.textContent).toBe('50%');

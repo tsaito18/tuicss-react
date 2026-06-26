@@ -1,21 +1,26 @@
 import {
+  Children,
   createContext,
+  isValidElement,
   useCallback,
   useContext,
   useId,
   useMemo,
-  useRef,
   useState,
 } from 'react';
-import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
+import type { ComponentPropsWithoutRef, KeyboardEventHandler, MouseEventHandler, ReactNode, Ref } from 'react';
 import { cx } from '../../utils/cx';
+
+interface TabRegistration {
+  value: string;
+  disabled: boolean;
+}
 
 // アクティブな value と切替関数、パネルとタブを関連付ける id を Context で配下に供給する。
 interface TabsContextValue {
   activeValue: string | undefined;
   setActiveValue: (value: string) => void;
-  // defaultValue 未指定時に最初の Tab を既定アクティブにするための登録窓口。
-  registerTab: (value: string) => void;
+  tabValues: TabRegistration[];
   baseId: string;
 }
 
@@ -52,19 +57,11 @@ export function Tabs({
   const isControlled = value !== undefined;
   const [uncontrolledValue, setUncontrolledValue] = useState<string | undefined>(defaultValue);
 
-  // 最初に登録された Tab を記録し、defaultValue も制御 value も無いときの既定アクティブにする。
-  const firstRegistered = useRef<string | undefined>(undefined);
-  const [fallbackValue, setFallbackValue] = useState<string | undefined>(undefined);
-
-  const registerTab = useCallback((tabValue: string) => {
-    if (firstRegistered.current === undefined) {
-      firstRegistered.current = tabValue;
-      setFallbackValue(tabValue);
-    }
-  }, []);
-
-  const resolvedUncontrolled = uncontrolledValue ?? fallbackValue;
-  const activeValue = isControlled ? value : resolvedUncontrolled;
+  const tabValues = useMemo(() => collectTabValues(children), [children]);
+  const firstEnabledValue = tabValues.find((tab) => !tab.disabled)?.value;
+  const activeValue = isControlled
+    ? value
+    : resolveTabValue(uncontrolledValue, tabValues) ?? firstEnabledValue;
 
   const setActiveValue = useCallback(
     (next: string) => {
@@ -77,8 +74,8 @@ export function Tabs({
   );
 
   const contextValue = useMemo<TabsContextValue>(
-    () => ({ activeValue, setActiveValue, registerTab, baseId }),
-    [activeValue, setActiveValue, registerTab, baseId],
+    () => ({ activeValue, setActiveValue, tabValues, baseId }),
+    [activeValue, setActiveValue, tabValues, baseId],
   );
 
   return (
@@ -88,6 +85,34 @@ export function Tabs({
       </div>
     </TabsContext.Provider>
   );
+}
+
+function collectTabValues(children: ReactNode): TabRegistration[] {
+  const tabs: TabRegistration[] = [];
+
+  Children.forEach(children, (child) => {
+    if (!isValidElement(child)) return;
+
+    if (child.type === Tab) {
+      const props = child.props as Pick<TabProps, 'value' | 'disabled'>;
+      tabs.push({ value: props.value, disabled: props.disabled ?? false });
+      return;
+    }
+
+    const props = child.props as { children?: ReactNode };
+    if (props.children !== undefined) {
+      tabs.push(...collectTabValues(props.children));
+    }
+  });
+
+  return tabs;
+}
+
+function resolveTabValue(value: string | undefined, tabs: TabRegistration[]): string | undefined {
+  if (value === undefined) return undefined;
+  const matchingTab = tabs.find((tab) => tab.value === value);
+  if (!matchingTab || matchingTab.disabled) return undefined;
+  return value;
 }
 
 export interface TabListProps extends ComponentPropsWithoutRef<'div'> {
@@ -112,17 +137,42 @@ export interface TabProps extends ComponentPropsWithoutRef<'a'> {
   children?: ReactNode;
 }
 
-export function Tab({ value, disabled = false, className, children, onClick, ref, ...anchorProps }: TabProps) {
-  const { activeValue, setActiveValue, registerTab, baseId } = useTabsContext('Tab');
+export function Tab({ value, disabled = false, className, children, onClick, onKeyDown, ref, ...anchorProps }: TabProps) {
+  const { activeValue, setActiveValue, tabValues, baseId } = useTabsContext('Tab');
   const active = activeValue === value;
 
-  // 描画ごとに登録窓口へ通知し、defaultValue 未指定時の既定アクティブ解決に使う。
-  registerTab(value);
-
-  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
     onClick?.(event);
     if (disabled || event.defaultPrevented) return;
     setActiveValue(value);
+  };
+
+  const handleKeyDown: KeyboardEventHandler<HTMLAnchorElement> = (event) => {
+    onKeyDown?.(event);
+    if (disabled || event.defaultPrevented) return;
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setActiveValue(value);
+      return;
+    }
+
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+
+    const enabledTabs = tabValues.filter((tab) => !tab.disabled);
+    const currentIndex = enabledTabs.findIndex((tab) => tab.value === value);
+    if (currentIndex === -1) return;
+
+    event.preventDefault();
+    const nextIndex =
+      event.key === 'ArrowRight'
+        ? (currentIndex + 1) % enabledTabs.length
+        : (currentIndex - 1 + enabledTabs.length) % enabledTabs.length;
+    const nextValue = enabledTabs[nextIndex]?.value;
+    if (nextValue === undefined) return;
+
+    setActiveValue(nextValue);
+    document.getElementById(`${baseId}-tab-${nextValue}`)?.focus();
   };
 
   return (
@@ -135,7 +185,9 @@ export function Tab({ value, disabled = false, className, children, onClick, ref
         aria-disabled={disabled || undefined}
         aria-controls={`${baseId}-panel-${value}`}
         id={`${baseId}-tab-${value}`}
+        tabIndex={active ? 0 : -1}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
         {...anchorProps}
       >
         {children}

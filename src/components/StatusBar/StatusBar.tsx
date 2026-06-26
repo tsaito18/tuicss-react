@@ -33,12 +33,16 @@ export function StatusBarItem({ className, children, ref, ...anchorProps }: Stat
   );
 }
 
-export interface StatusBarDividerProps extends ComponentPropsWithoutRef<'span'> {
-  // ref は span.tui-statusbar-divider へ転送される。
-  ref?: Ref<HTMLSpanElement>;
+export interface StatusBarDividerProps extends ComponentPropsWithoutRef<'li'> {
+  // ref は内部の li へ転送される。
+  ref?: Ref<HTMLLIElement>;
 }
 
 // 項目間に縦罫線を引くための区切り要素。
 export function StatusBarDivider({ className, ref, ...props }: StatusBarDividerProps) {
-  return <span ref={ref} className={cx('tui-statusbar-divider', className)} {...props} />;
+  return (
+    <li ref={ref} {...props}>
+      <span className={cx('tui-statusbar-divider', className)} aria-hidden="true" />
+    </li>
+  );
 }

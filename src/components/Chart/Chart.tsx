@@ -113,6 +113,18 @@ export interface ChartValueProps extends ComponentPropsWithoutRef<'div'> {
   children?: ReactNode;
 }
 
+function normalizePercent(value: number): number {
+  if (Number.isNaN(value) || value === -Infinity) {
+    return 0;
+  }
+
+  if (value === Infinity) {
+    return 100;
+  }
+
+  return Math.min(100, Math.max(0, value));
+}
+
 // 個々のバー。縦棒は height%、横棒は width% で長さを表す(本家 chart.scss の
 // flex レイアウト前提)。color は背景色クラスとして付与される。
 export function ChartValue({
@@ -128,7 +140,7 @@ export function ChartValue({
   const ctx = useChartContext();
   const resolvedOrientation = orientation ?? ctx?.orientation ?? 'vertical';
 
-  const clamped = Math.min(100, Math.max(0, value));
+  const clamped = normalizePercent(value);
   const sizeStyle: CSSProperties =
     resolvedOrientation === 'horizontal'
       ? { width: `${clamped}%` }

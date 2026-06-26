@@ -63,4 +63,10 @@ describe('Checkbox', () => {
     render(<Checkbox disabled>Default</Checkbox>);
     expect(screen.getByRole('checkbox')).toBeDisabled();
   });
+
+  it('keeps the input type fixed when unsafe props include type', () => {
+    const unsafeProps = { type: 'text' };
+    render(<Checkbox {...unsafeProps}>Default</Checkbox>);
+    expect(screen.getByRole('checkbox')).toHaveAttribute('type', 'checkbox');
+  });
 });

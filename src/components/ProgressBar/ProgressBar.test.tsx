@@ -36,6 +36,26 @@ describe('ProgressBar', () => {
     expect(progress.style.width).toBe('0%');
   });
 
+  it('normalizes invalid max and value for aria values and width', () => {
+    const { container } = render(<ProgressBar value={Number.NaN} max={Number.NaN} />);
+    const bar = screen.getByRole('progressbar');
+    const progress = container.querySelector('span.tui-progress') as HTMLElement;
+
+    expect(bar).toHaveAttribute('aria-valuemax', '100');
+    expect(bar).toHaveAttribute('aria-valuenow', '0');
+    expect(progress.style.width).toBe('0%');
+  });
+
+  it('normalizes non-positive max and infinite value for aria values and width', () => {
+    const { container } = render(<ProgressBar value={Infinity} max={0} />);
+    const bar = screen.getByRole('progressbar');
+    const progress = container.querySelector('span.tui-progress') as HTMLElement;
+
+    expect(bar).toHaveAttribute('aria-valuemax', '100');
+    expect(bar).toHaveAttribute('aria-valuenow', '100');
+    expect(progress.style.width).toBe('100%');
+  });
+
   it('renders an indeterminate element instead of a width-based progress', () => {
     const { container } = render(<ProgressBar indeterminate value={50} />);
     expect(container.querySelector('span.tui-indeterminate')).toBeInTheDocument();
@@ -71,6 +91,13 @@ describe('ProgressBar', () => {
     render(<ProgressBar indeterminate />);
     const bar = screen.getByRole('progressbar');
     expect(bar).not.toHaveAttribute('aria-valuenow');
+  });
+
+  it('does not expose invalid aria values when indeterminate props are invalid', () => {
+    render(<ProgressBar indeterminate value={Infinity} max={Number.NaN} />);
+    const bar = screen.getByRole('progressbar');
+    expect(bar).not.toHaveAttribute('aria-valuenow');
+    expect(bar).toHaveAttribute('aria-valuemax', '100');
   });
 
   it('merges an additional className onto the root', () => {
