@@ -58,11 +58,17 @@ jobs:
       # Uses npm Trusted Publishing (OIDC, no automation token).
       # This repository + workflow must be configured as a trusted publisher at npmjs.com.
       # NOTE: --provenance requires this repository to be PUBLIC.
+      #
+      # OIDC trusted publishing is an npm CLI feature (>= 11.5.1); neither pnpm nor the
+      # runner's bundled npm 10.x perform the OIDC token exchange (they fail with E404),
+      # so upgrade npm and publish with it.
+      - name: Upgrade npm for OIDC trusted publishing
+        if: steps.check.outputs.exists == 'false'
+        run: npm install -g npm@latest
+
       - name: Publish to npm
         if: steps.check.outputs.exists == 'false'
-        # --no-git-checks: tag-triggered runs check out a detached HEAD, which pnpm's
-        # default publish-branch guard rejects (ERR_PNPM_GIT_UNKNOWN_BRANCH).
-        run: pnpm publish --provenance --access public --no-git-checks
+        run: npm publish --provenance --access public
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
