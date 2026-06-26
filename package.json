@@ -31,6 +31,9 @@
   "sideEffects": [
     "**/*.css"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "files": [
     "dist"
   ],

@@ -1,0 +1,70 @@
+name: Release
+
+# Triggered by pushing a version tag (e.g. v0.2.0).
+# Runs the full pre-publish gate, publishes to npm with provenance
+# (skipping if that version already exists), then creates a GitHub Release.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # create the GitHub Release
+  id-token: write # npm provenance / OIDC trusted publishing
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Lint package
+        run: npm run lint:pkg
+
+      - name: Resolve package name/version and check npm
+        id: check
+        run: |
+          NAME=$(npm pkg get name | tr -d '"')
+          VERSION=$(npm pkg get version | tr -d '"')
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$NAME@$VERSION is already published on npm - skipping publish step."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Default auth: an automation token stored as the NPM_TOKEN repo secret.
+      # To switch to npm Trusted Publishing (OIDC, no token): configure this repo
+      # + workflow as a trusted publisher at npmjs.com, then the NODE_AUTH_TOKEN
+      # line below can be removed (id-token: write above is already set).
+      # NOTE: --provenance requires this repository to be PUBLIC.
+      - name: Publish to npm
+        if: steps.check.outputs.exists == 'false'
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
