@@ -21,85 +21,85 @@
 
 /* Styles */
 .tui-scroll-blue {
-    ::-webkit-scrollbar-track {
+    &::-webkit-scrollbar-track {
         background-image: url(images/scroll-blue.png);
     }
-    ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
         background-color: rgb(0, 0, 168);
     }
-    ::-webkit-scrollbar-thumb:hover {
+    &::-webkit-scrollbar-thumb:hover {
         background-color: rgb(0, 0, 168);
     }
 }
 
 .tui-scroll-green {
-    ::-webkit-scrollbar-track {
+    &::-webkit-scrollbar-track {
         background-image: url(images/scroll-green.png);
     }
-    ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
         background-color: rgb(0, 168, 0);
     }
-    ::-webkit-scrollbar-thumb:hover {
+    &::-webkit-scrollbar-thumb:hover {
         background-color: rgb(0, 168, 0);
     }
 }
 
 .tui-scroll-cyan {
-    ::-webkit-scrollbar-track {
+    &::-webkit-scrollbar-track {
         background-image: url(images/scroll-cyan.png);
     }
-    ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
         background-color: rgb(0, 168, 168);
     }
-    ::-webkit-scrollbar-thumb:hover {
+    &::-webkit-scrollbar-thumb:hover {
         background-color: rgb(0, 168, 168);
     }
 }
 
 .tui-scroll-red {
-    ::-webkit-scrollbar-track {
+    &::-webkit-scrollbar-track {
         background-image: url(images/scroll-red.png);
     }
-    ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
         background-color: rgb(168, 0, 0);
     }
-    ::-webkit-scrollbar-thumb:hover {
+    &::-webkit-scrollbar-thumb:hover {
         background-color: rgb(168, 0, 0);
     }
 }
 
 .tui-scroll-purple {
-    ::-webkit-scrollbar-track {
+    &::-webkit-scrollbar-track {
         background-image: url(images/scroll-purple.png);
     }
-    ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
         background-color: rgb(168, 0, 168);
     }
-    ::-webkit-scrollbar-thumb:hover {
+    &::-webkit-scrollbar-thumb:hover {
         background-color: rgb(168, 0, 168);
     }
 }
 
 .tui-scroll-yellow {
-    ::-webkit-scrollbar-track {
+    &::-webkit-scrollbar-track {
         background-image: url(images/scroll-yellow.png);
     }
-    ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
         background-color: rgb(168, 168, 0);
     }
-    ::-webkit-scrollbar-thumb:hover {
+    &::-webkit-scrollbar-thumb:hover {
         background-color: rgb(168, 168, 0);
     }
 }
 
 .tui-scroll-white {
-    ::-webkit-scrollbar-track {
+    &::-webkit-scrollbar-track {
         background-image: url(images/scroll-white.png);
     }
-    ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
         background-color: rgb(168, 168, 168);
     }
-    ::-webkit-scrollbar-thumb:hover {
+    &::-webkit-scrollbar-thumb:hover {
         background-color: rgb(168, 168, 168);
     }
 }
