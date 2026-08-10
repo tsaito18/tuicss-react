@@ -36,6 +36,9 @@
     background-color: rgb(255, 255, 0);
 }
 .tui-sidenav-button {
+    /* li 要素だが tui-nav の ul 外(単独)でも使われる。既定の display:list-item のままだと
+       行頭記号が出てしまうため打ち消す。ul 内に置いた場合の見た目は変わらない。 */
+    display: inline-block;
     cursor: pointer;
     @include disable-select;
 }

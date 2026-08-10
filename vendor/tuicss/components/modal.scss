@@ -1,8 +1,11 @@
 .tui-modal {
-    position: absolute;
-    left: 0px;
-    right: 0px;
-    top: 100px;
+    /* ビューポート中央に配置。幅を指定せず shrink-to-fit のままにすることで、
+       ダイアログ本体の外側は暗幕(.tui-overlap)がクリックを受け取り続ける
+       （全面を覆う実装にすると overlap クリックでの閉じる操作が死ぬ）。 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 101;
     display: none;
     &.active {
@@ -10,7 +13,8 @@
     }
 }
 .tui-overlap {
-    position: absolute;
+    /* modal がビューポート基準になったので暗幕も追従させる（スクロール中も全面を覆う）。 */
+    position: fixed;
     top: 0px;
     left: 0px;
     right: 0px;

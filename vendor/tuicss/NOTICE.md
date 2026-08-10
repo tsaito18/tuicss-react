@@ -49,3 +49,25 @@
 付与した要素**自身**のスクロールバーには適用されません。本プロジェクトの `ScrollArea`
 は `tui-scroll-*` をスクロールする要素自身に付与する API のため、`&::-webkit-scrollbar-*`
 に変更して自要素へ適用されるようにしています。
+
+### `components/checkbox.scss`, `components/radio.scss` — マーカーとラベルの間隔
+
+本家は `padding-left: 30px`。マーカー（`[√]` / `(•)`）は 3 文字あり、既定フォント
+（Lucida Console 18px）では約 32px あるため、ラベル文字列がマーカーに接触・微妙に重なります。
+`padding-left: 4ch` に変更し、マーカー 3 文字 + 1 文字分の間隔を常に確保しています。`ch` 単位に
+したのは、Lucida Console が無い環境で monospace にフォールバックしても崩れないようにするためです。
+
+### `components/modal.scss` — ダイアログを画面中央に配置
+
+本家は `.tui-modal` が `position: absolute; top: 100px; left: 0; right: 0` で左上寄せ固定です。
+`position: fixed` + `top/left: 50%` + `translate(-50%, -50%)` に変更してビューポート中央へ寄せています。
+幅は指定せず shrink-to-fit のままにしてあり、ダイアログ本体の外側は `.tui-overlap` が
+クリックを受け取ります（`Modal` の `closeOnOverlapClick` を壊さないため）。あわせて
+`.tui-overlap` も `position: fixed` にし、スクロール中も全面を覆うようにしています。
+
+### `components/sidenav.scss` — `.tui-sidenav-button` の行頭記号を打ち消す
+
+`.tui-sidenav-button` は `li` 要素で、本家デモでは常に `.tui-nav` の `ul` 内に置かれます。
+本プロジェクトの `SidenavButton` は単独配置も許すため、既定の `display: list-item` のままだと
+行頭記号（•）が描画されます。`display: inline-block` を追加して打ち消しています（`.tui-nav ul li`
+も元々 `inline-block` なので、`ul` 内に置いた場合の見た目は変わりません）。

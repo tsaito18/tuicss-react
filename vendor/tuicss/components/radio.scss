@@ -6,7 +6,9 @@
     position: relative;
     cursor: pointer;
     color: white;
-    padding-left: 30px;
+    /* マーカー($radio-on/off)は 3 文字。4ch でラベルとの間に必ず 1 文字空く。
+       固定 px だとフォント差(Lucida Console 不在時の monospace 代替)でずれる。 */
+    padding-left: 4ch;
     @include disable-select;
     &.disabled {
         color: rgb(168, 168, 168)
