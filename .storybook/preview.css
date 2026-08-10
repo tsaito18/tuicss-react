@@ -12,7 +12,11 @@
   color: rgb(255, 255, 255);
 }
 
-/* TuiCss links are `color: inherit`; keep them legible and on-theme (cyan). */
-.sb-tui-surface a {
-  color: rgb(0, 255, 255);
+/* Components that paint their own light background assume TuiCss's default black
+   text (they set no `color` of their own), so the surface's white foreground must
+   not leak into them. `:where()` keeps this at specificity 0 so component rules
+   and consumer overrides still win. */
+.sb-tui-surface
+  :where(.tui-nav, .tui-sidenav, .tui-dropdown-content, .tui-statusbar) {
+  color: rgb(0, 0, 0);
 }
