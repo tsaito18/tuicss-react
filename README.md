@@ -273,6 +273,13 @@ import { ProgressBar } from "@tsaito18/tuicss-react";
 
 `value` (default `0`), `max` (default `100`), `indeterminate`, and `label` (`true` → `"{percent}%"`, or pass a custom node).
 
+The unfilled part of the track is tiled with a background texture (`trackBackground`, default `"cyan-black"`), shared with `Range`. Those textures are opaque, so recoloring the track with a color class needs `trackBackground={false}`; `progressClassName` (which colors the filled part) is unaffected.
+
+```tsx
+<ProgressBar value={50} trackBackground="red-black" />
+<ProgressBar value={50} trackBackground={false} className="green-168" />
+```
+
 ### Chart
 
 Use the data-driven `ChartData` for the common case, or compose the low-level parts (`Chart`, `ChartDisplay`, `ChartValue`, `ChartXAxis`, `ChartYAxis`, `ChartLegend`) yourself. Bar `value` is a percentage 0–100; `color` is a color token (e.g. `"green-168"`).

@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
 import { cx } from '../../utils/cx';
+import type { TuiBackgroundColor } from '../Background';
 
 export interface ProgressBarProps extends ComponentPropsWithoutRef<'div'> {
   ref?: Ref<HTMLDivElement>;
@@ -8,6 +9,8 @@ export interface ProgressBarProps extends ComponentPropsWithoutRef<'div'> {
   indeterminate?: boolean;
   label?: boolean | ReactNode;
   progressClassName?: string;
+  // 未到達部に敷くテクスチャ背景。不透明なため色クラスでトラックを塗る場合は false。
+  trackBackground?: TuiBackgroundColor | false;
 }
 
 function normalizeMax(max: number): number {
@@ -33,6 +36,7 @@ export function ProgressBar({
   indeterminate = false,
   label,
   progressClassName,
+  trackBackground = 'cyan-black',
   ref,
   ...props
 }: ProgressBarProps) {
@@ -48,7 +52,7 @@ export function ProgressBar({
       aria-valuemax={normalizedMax}
       // indeterminate時は進捗が不明なため aria-valuenow を省略する
       aria-valuenow={indeterminate ? undefined : clamped}
-      className={cx('tui-progress-bar', className)}
+      className={cx('tui-progress-bar', trackBackground && `tui-bg-${trackBackground}`, className)}
       {...props}
     >
       {indeterminate ? (

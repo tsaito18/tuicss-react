@@ -113,6 +113,28 @@ describe('ProgressBar', () => {
     expect(progress).toHaveClass('red-168');
   });
 
+  it('gives the unfilled track a textured background by default', () => {
+    render(<ProgressBar value={50} />);
+    expect(screen.getByRole('progressbar')).toHaveClass('tui-bg-cyan-black');
+  });
+
+  it('honors an explicit trackBackground color', () => {
+    render(<ProgressBar value={50} trackBackground="red-black" />);
+    const bar = screen.getByRole('progressbar');
+    expect(bar).toHaveClass('tui-bg-red-black');
+    expect(bar).not.toHaveClass('tui-bg-cyan-black');
+  });
+
+  it('leaves the track untextured when trackBackground is false', () => {
+    render(<ProgressBar value={50} trackBackground={false} />);
+    expect(screen.getByRole('progressbar').className).toBe('tui-progress-bar');
+  });
+
+  it('textures the track while indeterminate as well', () => {
+    render(<ProgressBar indeterminate />);
+    expect(screen.getByRole('progressbar')).toHaveClass('tui-bg-cyan-black');
+  });
+
   it('forwards ref to the underlying div element', () => {
     const ref = createRef<HTMLDivElement>();
     render(<ProgressBar value={50} ref={ref} />);

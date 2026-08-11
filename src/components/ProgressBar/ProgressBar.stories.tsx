@@ -36,3 +36,19 @@ export const Colored: Story = {
     progressClassName: 'red-168',
   },
 };
+
+export const UntexturedTrack: Story = {
+  args: {
+    value: 50,
+    trackBackground: false,
+  },
+};
+
+// テクスチャは不透明なので、トラックを色クラスで塗るには trackBackground={false} が要る。
+export const ColoredTrack: Story = {
+  args: {
+    value: 50,
+    trackBackground: false,
+    className: 'green-168',
+  },
+};
