@@ -4,6 +4,7 @@
 // コンポーネント (+ サブコンポーネント・Props 型)
 export * from './components/Button';
 export * from './components/Input';
+export * from './components/Range';
 export * from './components/Textarea';
 export * from './components/Checkbox';
 export * from './components/Radio';

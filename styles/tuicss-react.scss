@@ -1,0 +1,110 @@
+/*
+ * 本パッケージ独自のスタイルレイヤー。
+ * TuiCss 本家 (vendor/tuicss) が持たないコンポーネントのみをここで定義する。
+ * build:css で vendor の出力の後ろへ連結されるため、万一 upstream に同名クラスが
+ * 追加された場合も当面はこちらが優先される（再ベンダリング時に寄せるか判断する）。
+ */
+
+/* range 入力。本家に slider が無いため、ProgressBar と同じ配色・寸法で自前定義する。 */
+.tui-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 200px;
+    height: 20px;
+    /* 未到達部の色。trackBackground でテクスチャを敷く場合は本体の tui-bg-* が
+       この上にタイルされ、false の場合はこの単色がそのまま見える。 */
+    background-color: rgb(0, 168, 168);
+    /* トラックの塗り分け位置。React 側が現在値から算出して注入する。 */
+    --tui-range-percent: 0%;
+
+    &:focus {
+        outline: 0;
+    }
+}
+
+/* 到達部 rgb(0,255,255) は .tui-progress と同じ配色。未到達部は透過させ、
+   input 本体の背景(単色またはテクスチャ)を透かせる。
+   カスタムプロパティは擬似要素へ継承されるため webkit / moz で同一の指定が効く。 */
+@mixin range-track {
+    height: 20px;
+    border: none;
+    border-radius: 0px;
+    background-color: transparent;
+    background-image: linear-gradient(
+        to right,
+        rgb(0, 255, 255) 0%,
+        rgb(0, 255, 255) var(--tui-range-percent),
+        transparent var(--tui-range-percent),
+        transparent 100%
+    );
+}
+
+@mixin range-thumb {
+    width: 10px;
+    height: 20px;
+    border: none;
+    border-radius: 0px;
+    background-color: rgb(255, 255, 255);
+    cursor: pointer;
+}
+
+.tui-range::-webkit-slider-runnable-track {
+    @include range-track;
+}
+
+.tui-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    @include range-thumb;
+}
+
+.tui-range::-moz-range-track {
+    @include range-track;
+}
+
+/* Firefox は既定で到達部を -moz-range-progress で塗るため、track の gradient と
+   二重描画にならないよう透明にする。 */
+.tui-range::-moz-range-progress {
+    background-color: transparent;
+}
+
+.tui-range::-moz-range-thumb {
+    @include range-thumb;
+}
+
+/* フォーカス時のつまみは .tui-input:focus と同じ黄。 */
+.tui-range:focus::-webkit-slider-thumb {
+    background-color: rgb(255, 255, 0);
+}
+
+.tui-range:focus::-moz-range-thumb {
+    background-color: rgb(255, 255, 0);
+}
+
+.tui-range:disabled,
+.tui-range.disabled {
+    cursor: default;
+}
+
+.tui-range:disabled::-webkit-slider-runnable-track,
+.tui-range.disabled::-webkit-slider-runnable-track {
+    background-image: none;
+    background-color: rgb(168, 168, 168);
+}
+
+.tui-range:disabled::-webkit-slider-thumb,
+.tui-range.disabled::-webkit-slider-thumb {
+    background-color: rgb(84, 84, 84);
+    cursor: default;
+}
+
+.tui-range:disabled::-moz-range-track,
+.tui-range.disabled::-moz-range-track {
+    background-image: none;
+    background-color: rgb(168, 168, 168);
+}
+
+.tui-range:disabled::-moz-range-thumb,
+.tui-range.disabled::-moz-range-thumb {
+    background-color: rgb(84, 84, 84);
+    cursor: default;
+}

@@ -3,6 +3,8 @@ import type { Preview } from '@storybook/react-vite';
 // Vite compiles the vendored SCSS via sass so components render with the DOS aesthetic.
 // url('./fonts/...') / url('./images/...') resolve relative to vendor/tuicss/ (the scss location).
 import '../vendor/tuicss/tuicss.scss';
+// 本家に無いコンポーネント(Range など)のスタイル。dist と同じく vendor の後に読む。
+import '../styles/tuicss-react.scss';
 import './preview.css';
 
 const preview: Preview = {

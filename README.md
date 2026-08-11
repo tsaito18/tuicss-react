@@ -64,6 +64,7 @@ The package exposes about 24 component families plus helpers. Most are thin, typ
 import {
   Input,
   Textarea,
+  Range,
   Checkbox,
   Radio,
   Fieldset,
@@ -75,6 +76,10 @@ function Form() {
     <Fieldset legend="Preferences">
       <Input placeholder="Name" />
       <Textarea rows={3} placeholder="Bio" />
+
+      {/* Range is an <input type="range"> with a squared-off DOS slider look.
+          Works controlled (value + onChange) or uncontrolled (defaultValue). */}
+      <Range min={0} max={100} defaultValue={40} aria-label="Volume" />
 
       {/* Checkbox / Radio render a <label> wrapper; the ref and input
           props (checked, onChange, name, value, disabled…) go to the input. */}
@@ -88,6 +93,8 @@ function Form() {
   );
 }
 ```
+
+`Range` fixes `type="range"` and accepts the usual `min` / `max` / `step` / `value` / `defaultValue` / `onChange`, plus `trackBackground` (default `"cyan-black"`, `false` to disable) which tiles the unfilled part of the track with a background texture — the same knob `ProgressBar` takes. Upstream TuiCss has no slider styles, so its `.tui-range` class ships with this package rather than with TuiCss — it is bundled in the same `styles.css`, so no extra import is needed. (`<Input type="range" />` still works, but stays unstyled.)
 
 ### Tabs (controlled or uncontrolled)
 
