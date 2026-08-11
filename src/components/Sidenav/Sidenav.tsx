@@ -1,5 +1,7 @@
 import type { ComponentPropsWithoutRef, KeyboardEventHandler, Ref } from 'react';
+import { useEffect } from 'react';
 import { cx } from '../../utils/cx';
+import { warnIfTuiStylesMissing } from '../../utils/tuiStyleCheck';
 
 export interface SidenavProps extends ComponentPropsWithoutRef<'nav'> {
   /** Open state. When true the `active` class is applied (TuiCss toggles `display` via `.active`). */
@@ -26,6 +28,15 @@ export function Sidenav({
   ref,
   ...props
 }: SidenavProps) {
+  useEffect(() => {
+    // 未バンドルの ESM をそのまま読む環境では process 自体が存在しないため typeof で保護する。
+    // バンドラが process.env.NODE_ENV を "production" に置換すると分岐ごと除去され、
+    // 併せて未使用になった import も落ちる(package.json の sideEffects 指定が前提)。
+    if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+      warnIfTuiStylesMissing({ className: 'tui-sidenav', componentName: 'Sidenav', tagName: 'nav' });
+    }
+  }, []);
+
   return (
     <nav
       ref={ref}

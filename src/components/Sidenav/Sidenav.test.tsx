@@ -1,8 +1,17 @@
 import { createRef } from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Sidenav, SidenavButton } from './Sidenav';
+import { Sidenav, SidenavButton, SidenavItem } from './Sidenav';
+import { warnIfTuiStylesMissing } from '../../utils/tuiStyleCheck';
+
+vi.mock('../../utils/tuiStyleCheck', () => ({ warnIfTuiStylesMissing: vi.fn() }));
+
+const mockedWarnIfTuiStylesMissing = vi.mocked(warnIfTuiStylesMissing);
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe('Sidenav', () => {
   it('applies the tui-sidenav class', () => {
@@ -86,6 +95,27 @@ describe('Sidenav', () => {
     expect(ref.current).toBeInstanceOf(HTMLElement);
     expect(ref.current?.tagName).toBe('NAV');
   });
+
+  it('runs the stylesheet self-check once on mount', () => {
+    const { rerender } = render(
+      <Sidenav open data-testid="nav">
+        <li>Item</li>
+      </Sidenav>,
+    );
+    expect(mockedWarnIfTuiStylesMissing).toHaveBeenCalledTimes(1);
+    expect(mockedWarnIfTuiStylesMissing).toHaveBeenCalledWith({
+      className: 'tui-sidenav',
+      componentName: 'Sidenav',
+      tagName: 'nav',
+    });
+
+    rerender(
+      <Sidenav open={false} data-testid="nav">
+        <li>Item</li>
+      </Sidenav>,
+    );
+    expect(mockedWarnIfTuiStylesMissing).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('SidenavButton', () => {
@@ -142,5 +172,17 @@ describe('SidenavButton', () => {
     const ref = createRef<HTMLLIElement>();
     render(<SidenavButton ref={ref}>≡</SidenavButton>);
     expect(ref.current).toBeInstanceOf(HTMLLIElement);
+  });
+
+  it('does not run the Sidenav stylesheet self-check', () => {
+    render(<SidenavButton data-testid="btn">≡</SidenavButton>);
+    expect(mockedWarnIfTuiStylesMissing).not.toHaveBeenCalled();
+  });
+});
+
+describe('SidenavItem', () => {
+  it('does not run the Sidenav stylesheet self-check', () => {
+    render(<SidenavItem href="#!">Home</SidenavItem>);
+    expect(mockedWarnIfTuiStylesMissing).not.toHaveBeenCalled();
   });
 });
