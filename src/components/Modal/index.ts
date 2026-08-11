@@ -1,2 +1,8 @@
-export { Modal, ModalCloseButton } from './Modal';
-export type { ModalProps, ModalCloseButtonProps } from './Modal';
+export { Modal, ModalCloseButton, ModalHeader, ModalBody, ModalFooter } from './Modal';
+export type {
+  ModalProps,
+  ModalCloseButtonProps,
+  ModalHeaderProps,
+  ModalBodyProps,
+  ModalFooterProps,
+} from './Modal';

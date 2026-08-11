@@ -108,3 +108,21 @@
     background-color: rgb(84, 84, 84);
     cursor: default;
 }
+
+/* modal-body / modal-footer。本家 TuiCss に該当クラスが無いため自前定義する。 */
+
+/* .tui-modal は幅指定なしの shrink-to-fit で、position:fixed + translate(-50%,-50%) による
+   中央配置のため、長いコンテンツをそのまま入れるとダイアログがビューポートを縦に突き抜ける。
+   既定で内側スクロールさせて防ぐ。 */
+.tui-modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* フッタのアクションは右寄せが既定。gap は本家 TuiCss の余白 (sidenav の padding 等) に
+   合わせた 6px。 */
+.tui-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}

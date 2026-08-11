@@ -31,6 +31,8 @@ import "@tsaito18/tuicss-react/styles.css";
 
 The bundled font ("Perfect DOS VGA 437") and background/scrollbar images are referenced from the CSS using relative URLs and are loaded automatically by your bundler — no extra configuration is needed.
 
+In development builds only (`process.env.NODE_ENV !== "production"`), `Modal` and `Sidenav` check on mount that the stylesheet actually arrived — they probe whether their base class still computes to `display: none` — and log a single `console.warn` pointing at the missing import if it does not. At most one warning is emitted per page load, and the check is stripped from production bundles entirely.
+
 ## Quick start
 
 ```tsx
@@ -121,7 +123,7 @@ function Example() {
 
 ### Modal (controlled)
 
-`Modal` is controlled via the required `open` prop and renders through a portal to `document.body`. It calls `onClose` on overlay click (`closeOnOverlapClick`, default `true`) and on Escape (`closeOnEsc`, default `true`). `ModalCloseButton` is a plain button — wire its `onClick` to your close handler.
+`Modal` is controlled via the required `open` prop and renders through a portal to `document.body`. It calls `onClose` on overlay click (`closeOnOverlayClick`, default `true`) and on Escape (`closeOnEsc`, default `true`). `ModalCloseButton` is a plain button — wire its `onClick` to your close handler.
 
 ```tsx
 import { useState } from "react";
@@ -140,6 +142,59 @@ function Example() {
   );
 }
 ```
+
+While open, the overlay behind the dialog is filled with a tiled TuiCss background texture (`overlapBackground`, default `"blue-black"`) at `overlapOpacity` (default `0.8`), so the page behind stays faintly visible. Pass any `TuiBackgroundColor` to change the texture, `1` to make it fully opaque, or `overlapBackground={false}` for the plain transparent overlay of upstream TuiCss:
+
+```tsx
+<Modal open={open} onClose={close} overlapBackground="green-black" />
+<Modal open={open} onClose={close} overlapOpacity={1} />
+<Modal open={open} onClose={close} overlapBackground={false} />
+```
+
+#### Header / body / footer
+
+For the usual dialog shape there are three subcomponents. As soon as any of them appears in `children`, `Modal` wraps the content in TuiCss's `div.tui-window > fieldset.tui-fieldset` structure for you, with `ModalHeader` rendering the `<legend>`. `windowClassName` applies extra classes — e.g. a color such as `red-168` — to that generated `.tui-window`.
+
+```tsx
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  Button,
+} from "@tsaito18/tuicss-react";
+
+<Modal open={open} onClose={close} aria-labelledby="confirm-title" windowClassName="red-168">
+  <ModalHeader id="confirm-title">Delete file?</ModalHeader>
+  <ModalBody>
+    <p>This cannot be undone.</p>
+  </ModalBody>
+  <ModalFooter>
+    <ModalCloseButton onClick={close}>Cancel</ModalCloseButton>
+    <Button onClick={confirm}>Delete</Button>
+  </ModalFooter>
+</Modal>;
+```
+
+`ModalBody` defaults to `max-height: 70vh; overflow-y: auto`, so long content scrolls inside the dialog instead of pushing it past the viewport. `ModalFooter` lays its children out as a right-aligned flex row and inserts a `.tui-divider` above itself; pass `divider={false}` if you already have your own rule there.
+
+Passing your own `tui-window` markup — the usage in the first example — is unchanged and still supported: no wrapper is generated in that case.
+
+`Modal` sets `role="dialog"` but does not invent an accessible name, so pass `aria-label` or `aria-labelledby` on `Modal` yourself (an `id` on `ModalHeader` pairs well with `aria-labelledby`).
+
+#### Dismissal and body scroll
+
+`dismissable` (default `true`) turns off Escape *and* overlay-click dismissal in one prop, which is what you want for a dialog that requires an explicit choice. An explicitly passed `closeOnEsc` / `closeOnOverlayClick` always wins over it.
+
+```tsx
+<Modal open={open} onClose={close} dismissable={false} />
+<Modal open={open} onClose={close} dismissable={false} closeOnEsc>{/* Escape still closes */}</Modal>
+```
+
+`closeOnOverlayClick` replaces the older `closeOnOverlapClick` — `overlay` is the common React vocabulary, while `overlap` is TuiCss-specific naming. `closeOnOverlapClick` is marked `@deprecated` in the type definitions (so editors strike it through) but remains fully functional and emits no runtime warning; if both are given, `closeOnOverlayClick` wins.
+
+While a modal is open, `document.body` scrolling is locked and the width of the vanished scrollbar is added back as `padding-right`, so the page behind does not shift. The lock is reference-counted — stacking or nesting modals is safe, and the body's original inline `overflow` / `padding-right` are restored only once the last one closes.
 
 ### Sidenav (controlled)
 
